@@ -94,9 +94,6 @@ td:last-child {
 </style>
 </head>
 <body>
-
-
-
 	<div id="wrapper">
 		<div class="navbar navbar-inverse navbar-fixed-top">
 			<div class="adjust-nav">
@@ -138,40 +135,36 @@ td:last-child {
 			<div id="page-inner">
 				<div class="row">
 					<div class="col-md-12">
-						<h2>Delete Sensors</h2>
+						<h2>View Sensor Details</h2>
 					</div>
 				</div>
 				<!-- /. ROW  -->
 				<hr />
-				<form name="sensorform" method="post">
-					<input type="hidden" value="1" name="sensorId" id="sensorId">
 					<table id="tableId">
 						<thead>
 							<tr>
 								<td><b>No</b></td>
 								<td><b>Sensor Id</b></td>
-								<td><b>Sensor Type</b></td>
-								<td><b>Location</b></td>
-								<td><b><i class="material-icons button edit">delete</i></b></td>
+								<td><b>Start Time</b></td>
+								<td><b>End Time</b></td>
+								<td><b>Amount</b></td>
 							</tr>
 						</thead>
 						<tbody>
-							<c:forEach items="${userSensorList}" var="sensor"
+							<c:forEach items="${userSensorStats}" var="sensor"
 								varStatus="count">
 								<input type="hidden" value=" ${sensor.sensorId}" id="sensorId"
 									name="sensorId">
 								<tr>
 									<td>${count.count}</td>
 									<td>${sensor.sensorId}</td>
-									<td>${sensor.sensorType}</td>
-									<td>${sensor.city}</td>
-									<td><i class="material-icons button edit"
-										onclick="myDelete(this)">delete</i></td>
+									<td>${sensor.startTime}</td>
+									<td>${sensor.endTime}</td>
+									<td>${sensor.cost}</td>
 								</tr>
 							</c:forEach>
 						</tbody>
 					</table>
-				</form>
 				<!-- /. ROW  -->
 			</div>
 			<!-- /. PAGE INNER  -->
@@ -190,16 +183,5 @@ td:last-child {
 	<script src="assets/js/bootstrap.min.js"></script>
 	<!-- CUSTOM SCRIPTS -->
 	<script src="assets/js/custom.js"></script>
-	<script>
-		function myDelete(index) {
-			var id = index.parentNode.parentNode.rowIndex;
-			var row = document.getElementById("tableId").rows.item(id);
-			var cell = row.cells.item(1).innerHTML;
-			document.getElementById("sensorId").value = cell;
-			document.forms["sensorform"].submit();
-		}
-	</script>
-
-
 </body>
 </html>

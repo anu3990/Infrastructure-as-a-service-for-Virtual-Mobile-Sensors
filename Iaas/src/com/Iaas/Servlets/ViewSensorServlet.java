@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.Iaas.Util.UtilConstants;
 import com.Iaas.VO.UserSensorDeatailVO;
+import com.Iaas.VO.ViewSensorDetailsVO;
 import com.Iaas.dbConnections.DBOperations;
 
 /**
@@ -29,8 +30,19 @@ public class ViewSensorServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher rd = request.getRequestDispatcher("blank.html");
-		rd.forward(request, response);
+		String sensorId = request.getParameter("sensorId");
+		DBOperations dbOper = new DBOperations();
+		List<ViewSensorDetailsVO> userSensorStats;
+		try {
+			userSensorStats = dbOper.getUserSensorDetails(sensorId);
+			request.setAttribute("userSensorStats", userSensorStats);
+			RequestDispatcher rd = request.getRequestDispatcher("viewSensorDetails.jsp");
+			rd.forward(request, response);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -9,7 +9,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.Iaas.Util.UtilConstants;
@@ -17,6 +21,7 @@ import com.Iaas.Util.Utils;
 import com.Iaas.VO.SensorVO;
 import com.Iaas.VO.UserSensorDeatailVO;
 import com.Iaas.VO.UserSensorVO;
+import com.Iaas.VO.ViewSensorDetailsVO;
 import com.Iaas.VO.WeatherDataVO;
 
 /**
@@ -85,7 +90,7 @@ public class DBConnections {
 		ps.setString(5, userSensor.getStartTime());
 		ps.executeUpdate();
 	}
-
+	
 	public int getLocationId(String location, String SensorType) throws ClassNotFoundException, SQLException {
 		int locationId = 0;
 		Connection dBConnection = createDbConnection();
@@ -148,9 +153,14 @@ public class DBConnections {
 		stmt.setString(3, null);
 		stmt.setString(4, sensorId);
 		stmt.executeUpdate();
+		
+		ViewSensorDetailsVO userStats = new ViewSensorDetailsVO();
+		userStats.setSensorId(sensorId);
+		userStats.setStartTime(timeStamp);
+		insertUserSensorStats(userStats);
 	}
 	
-	public void updateStopStatus(String sensorId) throws ClassNotFoundException, SQLException {
+	public void updateStopStatus(String sensorId) throws ClassNotFoundException, SQLException, ParseException {
 		// TODO Auto-generated method stub
 		Utils util = new Utils();
 		String timeStamp = util.getCurrentTime();
@@ -165,9 +175,11 @@ public class DBConnections {
 		stmt2.setString(1, timeStamp);
 		stmt2.setString(2, sensorId);
 		stmt2.executeUpdate();
+		
+		updateEndTimeStats(sensorId, timeStamp);
 	}
 	
-	public void updateTerminateStatus(String sensorId) throws ClassNotFoundException, SQLException {
+	public void updateTerminateStatus(String sensorId) throws ClassNotFoundException, SQLException, ParseException {
 		// TODO Auto-generated method stub
 		Utils util = new Utils();
 		String timeStamp = util.getCurrentTime();
@@ -178,6 +190,8 @@ public class DBConnections {
 		stmt.setString(2, timeStamp);
 		stmt.setString(3, sensorId);
 		stmt.executeUpdate();
+		
+		updateEndTimeStats(sensorId, timeStamp);
 	}
 	
 	public String getUserId(String user) throws ClassNotFoundException, SQLException{
@@ -190,5 +204,63 @@ public class DBConnections {
 			userId = result.getString("user_id");
 		}
 		return userId;
+	}
+	
+	public List<ViewSensorDetailsVO> getUserSensorStats(String sensorId) throws ClassNotFoundException, SQLException{
+		Connection dBConnection = createDbConnection();
+		List<ViewSensorDetailsVO> userStatsList = new ArrayList<>();
+		Statement stmtStartTime = dBConnection.createStatement();
+		String query = "Select sensor_id, start_time, end_time, session_cost from sensor_stat where sensor_id="+"'"+sensorId+"'"+";";
+		ResultSet result = stmtStartTime.executeQuery(query);
+		while(result.next()){
+			ViewSensorDetailsVO viewSensorDetailsVO = new ViewSensorDetailsVO();
+			viewSensorDetailsVO.setSensorId(result.getString("sensor_id"));
+			viewSensorDetailsVO.setStartTime(result.getString("start_time"));
+			viewSensorDetailsVO.setEndTime(result.getString("end_time"));
+			viewSensorDetailsVO.setCost(result.getString("session_cost"));
+			userStatsList.add(viewSensorDetailsVO);
+		}
+		return userStatsList;
+	}
+	
+	public static void updateEndTimeStats(String sensorId, String endTime) throws ClassNotFoundException, SQLException, ParseException{
+		String startTime = null;
+		Connection dBConnection = createDbConnection();
+		Statement stmtStartTime = dBConnection.createStatement();
+		String query = "Select start_time from sensor_stat where sensor_id="+'"'+sensorId+'"'+" and end_time is null;";
+		ResultSet result = stmtStartTime.executeQuery(query);
+		while(result.next()){
+			startTime = result.getString("start_time");
+		}
+		
+		String cost = calculateCost(startTime, endTime);
+		String insertData = "update sensor_stat set end_time=?, session_cost=? where sensor_id=?";
+		PreparedStatement stmt = dBConnection.prepareStatement(insertData);
+		stmt.setString(1, endTime);
+		stmt.setString(2, cost);
+		stmt.setString(3, sensorId);
+		stmt.executeUpdate();
+	}
+	
+	public static void insertUserSensorStats(ViewSensorDetailsVO userStats) throws ClassNotFoundException, SQLException {
+		Connection dBConnection = createDbConnection();
+		String insertData = "insert into sensor_stat" + "(sensor_id, start_time)" + " values" + "(?,?)";
+		PreparedStatement ps = dBConnection.prepareStatement(insertData);
+		ps.setString(1, userStats.getSensorId());
+		ps.setString(2, userStats.getStartTime());
+		ps.executeUpdate();
+	}
+	
+	public static String calculateCost(String startTime, String endTime) throws ParseException{
+		long seconds = (convertStringToDate(endTime).getTime()-convertStringToDate(startTime).getTime())/1000;
+		double hours = seconds/3600;
+		double cost = (hours*UtilConstants.perHourUsage/1024)*UtilConstants.costPerGb + (hours*UtilConstants.costPerHour);
+		return Double.toString(cost);
+	}
+	
+	public static Date convertStringToDate(String date) throws ParseException{
+		DateFormat formatter = new SimpleDateFormat("MM/dd/yy hh:mm a");
+		Date convertedDate = formatter.parse(date);
+		return convertedDate;
 	}
 }

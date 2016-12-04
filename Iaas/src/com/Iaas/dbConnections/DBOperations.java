@@ -4,6 +4,7 @@
 package com.Iaas.dbConnections;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 
 import com.Iaas.Util.InstancesUtilility;
@@ -12,6 +13,7 @@ import com.Iaas.Util.Utils;
 import com.Iaas.VO.SensorVO;
 import com.Iaas.VO.UserSensorDeatailVO;
 import com.Iaas.VO.UserSensorVO;
+import com.Iaas.VO.ViewSensorDetailsVO;
 
 /**
  * @author Rahul
@@ -39,8 +41,13 @@ public class DBOperations {
 		userSensorVO.setLocationId(dbConnections.getLocationId(location, sensorType));
 		userSensorVO.setStatusId(status);
 		userSensorVO.setStartTime(util.getCurrentTime());
-
+		
+		ViewSensorDetailsVO userStats= new ViewSensorDetailsVO();
+		userStats.setSensorId(sensorId);
+		userStats.setStartTime(userSensorVO.getStartTime());
+		
 		dbConnections.insertUserSensorData(userSensorVO);
+		DBConnections.insertUserSensorStats(userStats);
 	}
 	
 	public List<UserSensorDeatailVO> viewSensorsDetails(String userId, String status) throws ClassNotFoundException, SQLException{
@@ -57,14 +64,14 @@ public class DBOperations {
 		dbConnection.updateStartStatus(sensorId);
 	}
 	
-	public void stopSensor(String sensorId) throws ClassNotFoundException, SQLException{
+	public void stopSensor(String sensorId) throws ClassNotFoundException, SQLException, ParseException{
 		InstancesUtilility iu = new InstancesUtilility();
 		iu.stopSensorInstance(sensorId);
 		DBConnections dbConnection = new DBConnections();
 		dbConnection.updateStopStatus(sensorId);
 	}
 	
-	public void terminateSensor(String sensorId) throws ClassNotFoundException, SQLException{
+	public void terminateSensor(String sensorId) throws ClassNotFoundException, SQLException, ParseException{
 		InstancesUtilility iu = new InstancesUtilility();
 		iu.terminateSensorInstance(sensorId);
 		DBConnections dbConnection = new DBConnections();
@@ -74,5 +81,11 @@ public class DBOperations {
 	public String getUserId(String name) throws ClassNotFoundException, SQLException{
 		DBConnections dbconn = new DBConnections();
 		return dbconn.getUserId(name);
+	}
+	
+	public List<ViewSensorDetailsVO> getUserSensorDetails(String sensorId) throws ClassNotFoundException, SQLException{
+		DBConnections dbconn = new DBConnections();
+		List<ViewSensorDetailsVO> userSensorStats = dbconn.getUserSensorStats(sensorId);
+		return userSensorStats;
 	}
 }

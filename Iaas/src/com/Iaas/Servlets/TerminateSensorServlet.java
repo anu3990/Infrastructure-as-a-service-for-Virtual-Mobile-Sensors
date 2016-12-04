@@ -5,6 +5,7 @@ package com.Iaas.Servlets;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -33,7 +34,8 @@ public class TerminateSensorServlet extends HttpServlet{
 		try {
 			dbOperations.terminateSensor(sensorId);
 		} catch (ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		this.doGet(request, response);
