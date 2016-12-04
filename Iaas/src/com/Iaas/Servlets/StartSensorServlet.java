@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.Iaas.Util.UtilConstants;
 import com.Iaas.VO.UserSensorDeatailVO;
 import com.Iaas.dbConnections.DBOperations;
 
@@ -28,9 +29,7 @@ public class StartSensorServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//System.out.println("hfidh");
 		String sensorId = request.getParameter("sensorId");
-		System.out.println(sensorId);
 		DBOperations dbOperations = new DBOperations();
 		try {
 			dbOperations.startSensor(sensorId);
@@ -42,12 +41,13 @@ public class StartSensorServlet extends HttpServlet{
 	}
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String userId="1";
+		String userId=UtilConstants.getUserId();
 		//String userId = request.getParameter("userId");
 		DBOperations dbOperations = new DBOperations();
+		String status = "stopped";
 		List<UserSensorDeatailVO> userSensorData = null;
 		try {
-			userSensorData = dbOperations.viewSensorsDetails(userId);
+			userSensorData = dbOperations.viewSensorsDetails(userId, status);
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

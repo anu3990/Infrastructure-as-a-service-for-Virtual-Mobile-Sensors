@@ -30,6 +30,8 @@ public class CreateSensorServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 			String place = request.getParameter("myPlace");
+			String typeOfSensor = request.getParameter("dropdown");
+			System.out.println("sensor:"+typeOfSensor);
 			List<String> placeString = new ArrayList<>(Arrays.asList(place.split("</span>")));
 			for (String loc : placeString) {
 				if (loc.contains("\"locality\">")) {
@@ -40,14 +42,12 @@ public class CreateSensorServlet extends HttpServlet {
 			}
 			// Sensor Data being Inserted.
 			InstancesUtilility iu = new InstancesUtilility();
-			iu.createSensorInstance("Pressure", place);
-			
-			
+			iu.createSensorInstance(typeOfSensor, place);
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		RequestDispatcher rd = request.getRequestDispatcher("userDashBoard.html");
+		RequestDispatcher rd = request.getRequestDispatcher("userDashBoard.jsp");
 		rd.forward(request, response);
 	}
 }

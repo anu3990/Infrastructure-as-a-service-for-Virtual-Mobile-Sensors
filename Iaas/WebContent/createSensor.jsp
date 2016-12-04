@@ -6,11 +6,20 @@
 <title>Place Autocomplete</title>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 <meta charset="utf-8">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <style>
 /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
 #map {
-	height: 100%;
+	height: 75%;
+	width: 100%;
+	align: center;
+	border: 1em;
 }
 /* Optional: Makes the sample page fill the window. */
 html, body {
@@ -60,11 +69,29 @@ html, body {
 	font-size: 13px;
 	font-weight: 300;
 }
+
+h2 {
+	text-align: center;
+	text-colour: "blue";
+}
+
+.dropdown {
+	padding: 15px 32px;
+	position: absolute;
+	display: inline-block;
+	font-size: 16px;
+}
 </style>
 </head>
 <body>
-		<input type="text" id="pac-input" class="controls" 
-			placeholder="Enter a location">
+<body>
+	
+	<h2>Please enter a location</h2>
+	<br>
+	<input type="text" id="pac-input" class="controls"
+		placeholder="Enter a location">
+
+	<div class="container">
 		<div id="type-selector" class="controls">
 			<input type="radio" name="type" id="changetype-all" checked="checked">
 			<label for="changetype-all">All</label> <input type="radio"
@@ -75,11 +102,31 @@ html, body {
 				name="type" id="changetype-geocode"> <label
 				for="changetype-geocode">Geocodes</label>
 		</div>
-		<div id="map"></div>
-	<form action="createSensor" method="post">
-		<input type="hidden" name="myPlace" id="myPlace">
-		<button type="submit" id="create" name="create">Create Sensor</button>
-	</form>
+	</div>
+	<div id="map"></div>
+
+	<br>
+	<br>
+	<div>
+		<form action="createSensor" method="post">
+		<div class="container">
+		<h2>Please choose a sensor type</h2>
+		<div align="center">
+			<select name="dropdown">
+				<option value="Pressure">Pressure</option>
+				<option value="Temperature">Temperature</option>
+				<option value="Wind">Wind</option>
+				<option value="Humidity">Humidity</option>
+			</select>
+		</div>
+	</div>
+			<input type="hidden" name="myPlace" id="myPlace">
+			<button type="submit" id="create" name="create">Create
+				Sensor</button>
+		</form>
+	</div>
+	<br>
+	<br>
 	<script>
       // This example requires the Places library. Include the libraries=places
       // parameter when you first load the API. For example:

@@ -12,6 +12,8 @@ public class UserSensorDeatailVO {
 	private String sensorType;
 	private String city;
 	private String status;
+	private String startTime;
+	private String endTime;
 	public String getSensorId() {
 		return sensorId;
 	}
@@ -35,5 +37,17 @@ public class UserSensorDeatailVO {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public String getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+	public String getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
 	}
 }

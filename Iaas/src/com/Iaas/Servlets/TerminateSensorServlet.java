@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.Iaas.Util.UtilConstants;
 import com.Iaas.VO.UserSensorDeatailVO;
 import com.Iaas.dbConnections.DBOperations;
 
@@ -41,11 +42,11 @@ public class TerminateSensorServlet extends HttpServlet{
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		//String userId = request.getParameter("userId");
-		String userId="1";
 		DBOperations dbOperations = new DBOperations();
 		List<UserSensorDeatailVO> userSensorData = null;
+		String status= "terminated";
 		try {
-			userSensorData = dbOperations.viewSensorsDetails(userId);
+			userSensorData = dbOperations.viewSensorsDetails(UtilConstants.getUserId(), status);
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

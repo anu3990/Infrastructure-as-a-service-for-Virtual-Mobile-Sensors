@@ -203,7 +203,6 @@ td:last-child {
 			var cell = row.cells.item(1).innerHTML;
 			document.getElementById("sensorId").value = cell;
 			document.forms["sensorform"].submit();
-
 		}
 	</script>
 

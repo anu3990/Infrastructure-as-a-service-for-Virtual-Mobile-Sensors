@@ -107,48 +107,88 @@ public class DBConnections {
 		return dataExists;
 	}
 	
-	public List<UserSensorDeatailVO> getSensorDetails(String userId) throws ClassNotFoundException, SQLException{
+	public List<UserSensorDeatailVO> getSensorDetails(String userId, String status) throws ClassNotFoundException, SQLException{
 		Connection dBConnection = createDbConnection();
 		List<UserSensorDeatailVO> userSensorsList = new ArrayList<>();
 		Statement stmt = dBConnection.createStatement();
-		String query = "select sensor_id, type, city, status from sensor, user_sensor where sensor.location_id=user_sensor.location_id and user_id="+'"'+userId+'"'+";";
+		String query = null;
+		if(status.equals("all")){
+			query = "select sensor_id, type, city, status, start_time, end_time from sensor, user_sensor where sensor.location_id=user_sensor.location_id and user_id="+'"'+userId+'"'+";";
+		}
+		else if(status.equals("running") || status.equals("stopped")) {
+			query = "select sensor_id, type, city, status, start_time, end_time from sensor, user_sensor where sensor.location_id=user_sensor.location_id and user_id="+'"'+userId+'"'+" and status ="+"'"+status+"'"+";";
+		}
+		else if(status.equals("terminated")){
+			query = "select sensor_id, type, city, status, start_time, end_time from sensor, user_sensor where sensor.location_id=user_sensor.location_id and user_id="+'"'+userId+'"'+" and status !="+"'"+status+"'"+";";
+		}
+		
 		ResultSet result = stmt.executeQuery(query);
 		while(result.next()){
 			UserSensorDeatailVO sensorDeatailVO = new UserSensorDeatailVO();
 			sensorDeatailVO.setSensorId(result.getString("sensor_id"));
 			sensorDeatailVO.setSensorType(result.getString("type"));
 			sensorDeatailVO.setCity(result.getString("city"));
-			sensorDeatailVO.setStatus(result.getString("sensor_id"));
+			sensorDeatailVO.setStatus(result.getString("status"));
+			sensorDeatailVO.setStartTime(result.getString("start_time"));
+			sensorDeatailVO.setEndTime(result.getString("end_time"));
 			userSensorsList.add(sensorDeatailVO);
 		}
 		return userSensorsList;
 	}
 
-	public void updateStartStatus() throws ClassNotFoundException, SQLException {
+	public void updateStartStatus(String sensorId) throws ClassNotFoundException, SQLException {
 		// TODO Auto-generated method stub
 		Utils util = new Utils();
 		String timeStamp = util.getCurrentTime();
 		Connection dBConnection = createDbConnection();
-		String insertData = "update user_sensor set status=" +'"'+"running"+'"'+" and "+"start_time="+"'"+timeStamp+"'"+";" ;
-		Statement stmt = dBConnection.createStatement();
-		stmt.executeUpdate(insertData);
+		String insertData = "update user_sensor set status=?, start_time=?, end_time=? where sensor_id=?";
+		PreparedStatement stmt = dBConnection.prepareStatement(insertData);
+		stmt.setString(1, "running");
+		stmt.setString(2, timeStamp);
+		stmt.setString(3, null);
+		stmt.setString(4, sensorId);
+		stmt.executeUpdate();
 	}
 	
-	public void updateStopStatus() throws ClassNotFoundException, SQLException {
+	public void updateStopStatus(String sensorId) throws ClassNotFoundException, SQLException {
 		// TODO Auto-generated method stub
 		Utils util = new Utils();
 		String timeStamp = util.getCurrentTime();
 		Connection dBConnection = createDbConnection();
-		String insertData = "update user_sensor set status=" +'"'+"stopped"+'"'+" and "+"end_time="+"'"+timeStamp+"'"+";" ;
-		Statement stmt = dBConnection.createStatement();
-		stmt.executeUpdate(insertData);
+		String insertDataStatus = "update user_sensor set status=? where sensor_id=? ;";
+		String insertDataEndTime = "update user_sensor set end_time=? where sensor_id=? ;" ;
+		PreparedStatement stmt1 = dBConnection.prepareStatement(insertDataStatus);
+		stmt1.setString(1, "stopped");
+		stmt1.setString(2, sensorId);
+		stmt1.executeUpdate();
+		PreparedStatement stmt2 = dBConnection.prepareStatement(insertDataEndTime);
+		stmt2.setString(1, timeStamp);
+		stmt2.setString(2, sensorId);
+		stmt2.executeUpdate();
 	}
 	
-	public void updateTerminateStatus() throws ClassNotFoundException, SQLException {
+	public void updateTerminateStatus(String sensorId) throws ClassNotFoundException, SQLException {
 		// TODO Auto-generated method stub
+		Utils util = new Utils();
+		String timeStamp = util.getCurrentTime();
 		Connection dBConnection = createDbConnection();
-		String insertData = "update user_sensor set status=" +'"'+"termnated"+'"' ;
+		String insertData = "update user_sensor set status=?, end_time=? where sensor_id=?";
+		PreparedStatement stmt = dBConnection.prepareStatement(insertData);
+		stmt.setString(1, "terminated");
+		stmt.setString(2, timeStamp);
+		stmt.setString(3, sensorId);
+		stmt.executeUpdate();
+	}
+	
+	public String getUserId(String user) throws ClassNotFoundException, SQLException{
+		String userId = null;
+		Connection dBConnection = createDbConnection();
 		Statement stmt = dBConnection.createStatement();
-		stmt.executeUpdate(insertData);
+		String query = "Select user_id from user where email_id="+"'"+user+"'"+";";
+		ResultSet result = stmt.executeQuery(query);
+		while(result.next()){
+			userId = result.getString("user_id");
+		}
+		return userId;
 	}
 }

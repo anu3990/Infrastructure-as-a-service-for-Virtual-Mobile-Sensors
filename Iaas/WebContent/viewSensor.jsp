@@ -4,7 +4,7 @@
 <head>
       <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Simple Responsive Admin</title>
+    <title>View Sensors</title>
 	<!-- BOOTSTRAP STYLES-->
     <link href="assets/css/bootstrap.css" rel="stylesheet" />
      <!-- FONTAWESOME STYLES-->
@@ -138,6 +138,8 @@ td:last-child {
       <td><b>Sensor Type</b></td>
       <td><b>Location</b></td>
        <td><b>Status</b></td>
+       <td><b>Start Time</b></td>
+       <td><b>End Time</b></td>
      <td><b>View</b></td>
     </tr>
   </thead>
@@ -153,6 +155,8 @@ td:last-child {
 									<td>${sensor.sensorType}</td>
 									<td>${sensor.city}</td>
 									<td>${sensor.status}</td>
+									<td>${sensor.startTime}</td>
+									<td>${sensor.endTime}</td>
 									<td><i class="material-icons button edit"
 										onclick="myStart(this)">wb_cloudy</i></td>
 								</tr>
@@ -182,8 +186,5 @@ td:last-child {
     <script src="assets/js/bootstrap.min.js"></script>
       <!-- CUSTOM SCRIPTS -->
     <script src="assets/js/custom.js"></script>
-   
-   
-  
 </body>
 </html>

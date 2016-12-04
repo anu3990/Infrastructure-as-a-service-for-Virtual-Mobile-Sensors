@@ -49,7 +49,6 @@ public class InstancesUtilility {
 		runInstancesRequest.withImageId(UtilConstants.ec2ImageId).withInstanceType(UtilConstants.ec2InstanceType).withMinCount(1).withMaxCount(1)
 				.withKeyName(ec2KeyPair).withSecurityGroups("default");
 		RunInstancesResult runInstancesResult = amazonEC2Client.runInstances(runInstancesRequest);
-		System.out.println(runInstancesRequest);
 		
 		DescribeInstancesRequest ir = new DescribeInstancesRequest();
 		ir.withInstanceIds(runInstancesResult.getReservation().getInstances().get(0).getInstanceId());

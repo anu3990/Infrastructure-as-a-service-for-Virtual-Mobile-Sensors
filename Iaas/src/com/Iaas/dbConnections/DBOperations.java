@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.Iaas.Util.InstancesUtilility;
+import com.Iaas.Util.UtilConstants;
 import com.Iaas.Util.Utils;
 import com.Iaas.VO.SensorVO;
 import com.Iaas.VO.UserSensorDeatailVO;
@@ -33,7 +34,7 @@ public class DBOperations {
 		DBConnections dbConnections = new DBConnections();
 		UserSensorVO userSensorVO = new UserSensorVO();
 		
-		userSensorVO.setUserId("1");
+		userSensorVO.setUserId(UtilConstants.getUserId());
 		userSensorVO.setSensorId(sensorId);
 		userSensorVO.setLocationId(dbConnections.getLocationId(location, sensorType));
 		userSensorVO.setStatusId(status);
@@ -42,9 +43,9 @@ public class DBOperations {
 		dbConnections.insertUserSensorData(userSensorVO);
 	}
 	
-	public List<UserSensorDeatailVO> viewSensorsDetails(String userId) throws ClassNotFoundException, SQLException{
+	public List<UserSensorDeatailVO> viewSensorsDetails(String userId, String status) throws ClassNotFoundException, SQLException{
 		DBConnections dbConnection = new DBConnections();
-		List<UserSensorDeatailVO> userSensorsList= dbConnection.getSensorDetails(userId);
+		List<UserSensorDeatailVO> userSensorsList= dbConnection.getSensorDetails(userId, status);
 		return userSensorsList;
 	}
 	
@@ -53,20 +54,25 @@ public class DBOperations {
 		iu.startSensorInstance(sensorId);
 		
 		DBConnections dbConnection = new DBConnections();
-		dbConnection.updateStartStatus();
+		dbConnection.updateStartStatus(sensorId);
 	}
 	
 	public void stopSensor(String sensorId) throws ClassNotFoundException, SQLException{
 		InstancesUtilility iu = new InstancesUtilility();
 		iu.stopSensorInstance(sensorId);
 		DBConnections dbConnection = new DBConnections();
-		dbConnection.updateStopStatus();
+		dbConnection.updateStopStatus(sensorId);
 	}
 	
 	public void terminateSensor(String sensorId) throws ClassNotFoundException, SQLException{
 		InstancesUtilility iu = new InstancesUtilility();
 		iu.terminateSensorInstance(sensorId);
 		DBConnections dbConnection = new DBConnections();
-		dbConnection.updateTerminateStatus();
+		dbConnection.updateTerminateStatus(sensorId);
+	}
+	
+	public String getUserId(String name) throws ClassNotFoundException, SQLException{
+		DBConnections dbconn = new DBConnections();
+		return dbconn.getUserId(name);
 	}
 }
